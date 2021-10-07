@@ -16,6 +16,18 @@ export class TasksService {
         private taskRepository:TaskRepository)
     { }
 
+
+    async getTasks(taskFilterDto:TaskFilterDto):Promise<Task[]>{
+        const {status, search} = taskFilterDto;
+        const query = this.taskRepository.createQueryBuilder('task');
+        if(status)
+        query.andWhere('task.status = :status',{status});
+        if(search)
+        query.andWhere('LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',{search:`%${search}%`});
+        let tasks = await query.getMany();
+        return tasks;
+    }
+
     // private tasks : Task[] = [];
 
     // getTasks():Task[]{
@@ -88,9 +100,10 @@ export class TasksService {
     //     this.tasks.splice(taskIndex,1);
     // }
 
-    // updateTaskById(id: string, status: TaskStatus): Task{
-    //    let task = this.getTaskById(id);
-    //    task.status = status;
-    //    return task;
-    // } 
+    async updateTaskById(id: string, status: TaskStatus): Promise<Task>{
+       let task = await this.getTaskById(id);
+       task.status = status;
+       this.taskRepository.save(task);
+       return task;
+    } 
 }

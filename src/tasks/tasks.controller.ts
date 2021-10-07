@@ -12,6 +12,11 @@ export class TasksController {
 
     constructor(private taskService:TasksService){}
 
+    @Get()
+    getTasks(@Query() taskFilterDto:TaskFilterDto):Promise<Task[]>{
+        return this.taskService.getTasks(taskFilterDto);
+    }
+
     // @Get()
     // getAllTasks(@Query() taskFilterDto:TaskFilterDto):Task[]{
 
@@ -47,9 +52,9 @@ export class TasksController {
         return this.taskService.deleteTaskById(id);
     }
 
-    // @Patch('/:id/status')
-    // updateTaskById(@Param('id') id:string, @Body() updateTaskStatusDto:UpdateTaskStatusDto): Task{
-    //     const {status} = updateTaskStatusDto;
-    //     return this.taskService.updateTaskById(id, status);
-    // }
+    @Patch('/:id/status')
+    updateTaskById(@Param('id') id:string, @Body() updateTaskStatusDto:UpdateTaskStatusDto): Promise<Task>{
+        const {status} = updateTaskStatusDto;
+        return this.taskService.updateTaskById(id, status);
+    }
 }
